@@ -2,7 +2,6 @@
 
 pragma solidity >=0.8.0 <=0.8.21;
 
-//definitie contract
 contract ProductIdentification {
     address public owner;
     uint public registrationFee;
@@ -25,7 +24,7 @@ contract ProductIdentification {
     event ProducerRegistered(address producerAddress, string name);
     event ProductRegistered(uint productId, address producerAddress, string name, uint volume);
     
-    // Constructorul contractului inițializează proprietarul și taxa de înregistrare.
+    // Initializarea proprietarului si a taxei de inregistrare de catre constructorul contractului
     constructor(uint _registrationFee) {
         owner = msg.sender;
         registrationFee = _registrationFee;
@@ -41,12 +40,12 @@ contract ProductIdentification {
         _;
     }
     
-    // Funcția permite proprietarului să modifice taxa de înregistrare.
+    // Modificarea taxei de inregistrare de catre proprietar
     function setRegistrationFee(uint _fee) public onlyOwner {
         registrationFee = _fee;
     }
     
-    // Funcția permite înregistrarea unui producător și percepe taxa de înregistrare.
+    // Inregistrarea unui nou producator si taxa de inscriere
     function registerProducer(string memory _name) public payable {
         require(msg.value >= registrationFee, "Insufficient registration fee");
         require(!producers[msg.sender].isRegistered, "Producer is already registered");
@@ -55,7 +54,7 @@ contract ProductIdentification {
         emit ProducerRegistered(msg.sender, _name);
     }
     
-    // Funcția permite înregistrarea unui produs de către un producător înregistrat.
+    // Inregistrarea unui nou produs de catre un producator inregistrat
     function registerProduct(string memory _name, uint _volume) public onlyRegisteredProducer {
         require(_volume > 0, "Volume must be greater than 0");
         
@@ -64,12 +63,12 @@ contract ProductIdentification {
         productCount++;
     }
     
-    // Funcția verifică dacă un producător este înregistrat pe baza adresei sale.
+    // Verificare pe baza adresei daca un producator este inregistrat
     function isProducerRegistered(address _producerAddress) public view returns (bool) {
         return producers[_producerAddress].isRegistered;
     }
     
-    // Funcția returnează informații despre un produs pe baza id-ului acestuia.
+    // Returnarea informatiilor depsre un produs pe baza id-ului
     function getProductInfo(uint _productId) public view returns (address, string memory, uint) {
         require(_productId < productCount, "Product with this ID does not exist");
         

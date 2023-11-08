@@ -4,7 +4,6 @@ pragma solidity >=0.8.0 <=0.8.22;
 
 import "./ProductIdentification.sol";
 
-// Definire contract ProductStore
 contract ProductStore {
     address public owner;
     ProductIdentification public identificationContract;
@@ -22,7 +21,7 @@ contract ProductStore {
     event ProductAddedToStore(address indexed producerAddress, uint productId, uint quantity, uint unitPrice);
     event ProductPurchased(address indexed buyer, uint productId, uint quantity, uint totalPrice);
 
-    // Constructorul contractului ProductStore inițializează proprietarul și adresa contractului de identificare a produselor.
+    // Initializarea proprietarului si al adresei contractului ProductIdentification de catre constructor
     constructor(address _identificationContractAddress) {
         owner = msg.sender;
         identificationContract = ProductIdentification(_identificationContractAddress);
@@ -44,13 +43,13 @@ contract ProductStore {
         _;
     }
 
-    // Funcția permite proprietarului să adauge produse în magazin.
+    // Adaugare produse in magazin
     function addProductToStore(uint _productId, uint _quantity, uint _unitPrice) public onlyOwner productExists(_productId) {
         productsInStore[msg.sender][_productId] = ProductInStore(_productId, _quantity, _unitPrice);
         emit ProductAddedToStore(msg.sender, _productId, _quantity, _unitPrice);
     }
 
-    // Funcția permite unui client să verifice disponibilitatea și prețul unui produs în magazin.
+    // Verificarea disponibilitatii si a pretului unui produs
     function checkProductAvailability(uint _productId) public view productExists(_productId) returns (uint, uint) {
         ProductInStore storage productInStore = productsInStore[msg.sender][_productId];
         if (productInStore.productId == _productId) {
@@ -59,21 +58,21 @@ contract ProductStore {
         return (0, 0);
     }
 
-    // Funcția permite unui client să achiziționeze produse din magazin.
+    // Achizitionarea unui produs
     function purchaseProduct(uint _productId, uint _quantity) public payable productExists(_productId) {
         ProductInStore storage productInStore = productsInStore[msg.sender][_productId];
         require(productInStore.productId == _productId, "Product not available in the store");
         require(productInStore.quantity >= _quantity, "Insufficient quantity in the store");
         require(msg.value >= _quantity * productInStore.unitPrice, "Insufficient payment for the purchase");
 
-        // Transferă jumătate din prețul total producătorului
+        // Transfera jumatate din pretul total catre producator
         uint totalPrice = _quantity * productInStore.unitPrice;
         (address producerAddress, , ) = identificationContract.getProductInfo(_productId);
         address payable producerPayable = payable(producerAddress);
         producerPayable.transfer(totalPrice / 2);
 
 
-        // Actualizează cantitatea disponibilă în magazin
+        // Actualizarea cantitatii disponibile in magazin
         productInStore.quantity -= _quantity;
 
         emit ProductPurchased(msg.sender, _productId, _quantity, totalPrice);

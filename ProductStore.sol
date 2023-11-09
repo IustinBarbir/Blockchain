@@ -3,6 +3,7 @@
 pragma solidity >=0.8.0 <=0.8.22;
 
 import "./ProductIdentification.sol";
+import "./ProductDeposit.sol";
 
 contract ProductStore {
     address public owner;

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity >=0.8.0 <=0.8.22;
 
 import "./ProductIdentification.sol";
@@ -8,6 +7,7 @@ import "./ProductDeposit.sol";
 contract ProductStore {
     address public owner;
     ProductIdentification public identificationContract;
+    ProductDeposit public depositContract;
     address public identificationContractAddress;
 
     struct ProductInStore {
@@ -18,15 +18,18 @@ contract ProductStore {
 
     mapping(address => mapping(uint => ProductInStore)) public productsInStore;
     uint public productCount;
+    mapping(address => bool) public authorizedDeposits;
 
     event ProductAddedToStore(address indexed producerAddress, uint productId, uint quantity, uint unitPrice);
     event ProductPurchased(address indexed buyer, uint productId, uint quantity, uint totalPrice);
 
-    // Initializarea proprietarului si al adresei contractului ProductIdentification de catre constructor
-    constructor(address _identificationContractAddress) {
+    // Initializarea proprietarului și a adresei contractului ProductIdentification de către constructor
+    constructor(address _identificationContractAddress, address _depositContractAddress) {
         owner = msg.sender;
         identificationContract = ProductIdentification(_identificationContractAddress);
         identificationContractAddress = _identificationContractAddress;
+
+        depositContract = ProductDeposit(_depositContractAddress);
     }
 
     modifier onlyOwner() {
@@ -72,37 +75,18 @@ contract ProductStore {
         address payable producerPayable = payable(producerAddress);
         producerPayable.transfer(totalPrice / 2);
 
-
         // Actualizarea cantitatii disponibile in magazin
         productInStore.quantity -= _quantity;
 
         emit ProductPurchased(msg.sender, _productId, _quantity, totalPrice);
     }
-    mapping(address => mapping(uint => ProductInStore)) public productsInStore;
-    uint public productCount;
-    mapping(address => bool) public authorizedDeposits;
-
-    event ProductAddedToStore(address indexed producerAddress, uint productId, uint quantity, uint unitPrice);
-    event ProductPurchased(address indexed buyer, uint productId, uint quantity, uint totalPrice);
-
-    // Initializarea proprietarului si al adresei contractului ProductIdentification de catre constructor
-    constructor(address _identificationContractAddress) {
-    constructor(address _depositAddress, address _identificationContractAddress) {
-        owner = msg.sender;
-        depositAddress = _depositAddress;
-        identificationContract = ProductIdentification(_identificationContractAddress);
-        identificationContractAddress = _identificationContractAddress;
-    }
 
     function setDepositAddress(address _newDepositAddress) public onlyOwner {
-        depositAddress = _newDepositAddress;
+        depositContract = ProductDeposit(_newDepositAddress);
     }
 
     function addAuthorizedDeposit(address _deposit) public onlyOwner {
         authorizedDeposits[_deposit] = true;
     }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
-        _;
 }
+

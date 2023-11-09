@@ -17,15 +17,25 @@ contract ProductStore {
 
     mapping(address => mapping(uint => ProductInStore)) public productsInStore;
     uint public productCount;
+    mapping(address => bool) public authorizedDeposits;
 
     event ProductAddedToStore(address indexed producerAddress, uint productId, uint quantity, uint unitPrice);
     event ProductPurchased(address indexed buyer, uint productId, uint quantity, uint totalPrice);
 
     // Initializarea proprietarului si al adresei contractului ProductIdentification de catre constructor
-    constructor(address _identificationContractAddress) {
+    constructor(address _depositAddress, address _identificationContractAddress) {
         owner = msg.sender;
+        depositAddress = _depositAddress;
         identificationContract = ProductIdentification(_identificationContractAddress);
         identificationContractAddress = _identificationContractAddress;
+    }
+
+    function setDepositAddress(address _newDepositAddress) public onlyOwner {
+        depositAddress = _newDepositAddress;
+    }
+
+    function addAuthorizedDeposit(address _deposit) public onlyOwner {
+        authorizedDeposits[_deposit] = true;
     }
 
     modifier onlyOwner() {

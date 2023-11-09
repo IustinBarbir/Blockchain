@@ -77,7 +77,7 @@ contract ProductStore {
 
         emit ProductPurchased(msg.sender, _productId, _quantity, totalPrice);
     }
- mapping(address => mapping(uint => ProductInStore)) public productsInStore;
+    mapping(address => mapping(uint => ProductInStore)) public productsInStore;
     uint public productCount;
     mapping(address => bool) public authorizedDeposits;
 

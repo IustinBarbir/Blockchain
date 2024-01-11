@@ -13,25 +13,25 @@ contract SampleToken {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    constructor (uint256 _initialSupply) {
+    constructor (uint256 _initialSupply) payable {
         balanceOf[msg.sender] = _initialSupply;
         totalSupply = _initialSupply;
         emit Transfer(address(0), msg.sender, totalSupply);
     }
 
-    function name() public view returns (string memory) {
+    function getMame() public view returns (string memory) {
         return name;
     }
 
-    function symbol() public view returns (string memory) {
+    function getSymbol() public view returns (string memory) {
         return symbol;
     }
 
-    function decimals() public view returns (uint8) {
+    function decimals() public pure returns (uint8) {
         return 18; // Set the number of decimals as needed
     }
 
-    function totalSupply() public view returns (uint256) {
+    function getTotalSupply() public view returns (uint256) {
         return totalSupply;
     }
 

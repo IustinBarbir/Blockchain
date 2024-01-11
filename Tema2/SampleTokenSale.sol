@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./SampleToken.sol";
+import "./sampleToken.sol";
 
 contract SampleTokenSale {
     SampleToken public tokenContract;
@@ -17,7 +17,7 @@ contract SampleTokenSale {
         _;
     }
 
-    constructor(SampleToken _tokenContract, uint256 _tokenPrice) {
+    constructor(SampleToken _tokenContract, uint256 _tokenPrice) payable  {
         owner = msg.sender;
         tokenContract = _tokenContract;
         tokenPrice = _tokenPrice;
